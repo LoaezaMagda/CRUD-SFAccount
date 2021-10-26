@@ -1,0 +1,102 @@
+<aura:component controller="CrudAuraController" implements="flexipage:availableForAllPageTypes" access="global">
+	<aura:attribute name="record" type="Object"/>
+    <aura:attribute name="simpleRecord" type="Object"/>
+    <aura:attribute name="recordError" type="String"/>
+    
+    <aura:attribute name="recordId" type="Account" />
+    <aura:attribute name="accounts" type="List" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:attribute name="accId" type="String"/>
+    <aura:handler name="change" value="{!v.accId}" action="{!c.handleChange}"/>
+    
+    <aura:attribute name="option" type="String"/>
+    <aura:handler name="change" value="{!v.option}" action="{!c.handleChangeAction}"/>
+
+    <div class="c-container slds-align" aura:id="myContainer" style="height:5rem;font-size:1.2em;background:green;">
+        <div class="demo-only demo-only--sizing slds-grid slds-wrap" style="text-align:center">
+            <div class="slds-size_2-of-2 slds-p-horizontal_medium">
+                              <br/><p style="font-size:1.5em;color:white;">CRUD Aura Component</p>
+            </div>
+        </div>
+        <div class="demo-only demo-only--sizing slds-grid slds-wrap" style="padding:50px">
+            <div class="slds-size_1-of-2 slds-p-horizontal_medium">
+                <p><b>Action:</b></p> 
+               <lightning:select name="opt" aura:id="opt" label="Select Option" required="true" value="{!v.option}">
+                    <option value="">choose one...</option>
+                    <option value="create">Create</option>
+                    <option value="edit">Edit</option>
+                    <option value="view">View</option>
+                    <option value="delete">Delete</option>
+                </lightning:select>
+            </div>
+            <aura:renderIf isTrue="{!and(v.option != 'create', v.option != '')}">
+                    <div class="slds-size_1-of-2 slds-p-horizontal_medium">
+                        <p><b>Account:</b></p> 
+                       <lightning:select name="listAcc" aura:id="listAcc" label="Select Option" required="true" value="{!v.accId}">
+                            <option value="">choose one...</option>
+                            <aura:iteration items="{!v.accounts}" var="account">
+                                <option value="{!account.Id}">{!account.Name}</option>
+                            </aura:iteration>
+                        </lightning:select>
+                </div><br/>
+                </aura:renderIf>
+        </div>
+
+	
+	<force:recordData aura:id="accountRecordCreator" 
+           fields="Name,BillingCity,BillingState,Industry"
+           recordId="{!v.accId}"
+           targetRecord="{!v.record}"
+           targetFields="{!v.simpleRecord}"
+           targetError="{!v.recordError}"
+     />
+        
+     <div class="demo-only demo-only--sizing slds-grid slds-wrap">
+        <div class="slds-align_absolute-center" style="background:gray">   
+     		<lightning:button variant="brand-outline" label="Show Form" title="Show Form" onclick="{!c.showForm}"/>
+         </div>
+     </div><br/>
+		
+      <div aura:id="divForm" class="demo-only demo-only--sizing slds-grid slds-wrap slds-align_absolute-center">
+            <div class="Account slds-size_2-of-2 slds-p-horizontal_small" style="width:900px">
+                <lightning:card iconName="action:new_account" title="Account">
+                    <div class="slds-p-horizontal--small">
+                        <aura:renderIf isTrue="{!v.option == 'create' || v.option == 'edit'}">
+                            <lightning:input aura:id="accField" label="Name" value="{!v.simpleRecord.Name}"/>
+                            <lightning:input aura:id="accField" label="BillingCity" value="{!v.simpleRecord.BillingCity}"/>
+                            <lightning:input aura:id="accField" label="BillingState" value="{!v.simpleRecord.BillingState}"/>
+                            <lightning:input aura:id="accField" label="Industry" value="{!v.simpleRecord.Industry}"/>
+                            <br/>
+                        </aura:renderIf>
+                        <aura:renderIf isTrue="{!v.option == 'view' || v.option == 'delete'}">
+                            <p><b>Name : </b>
+                                <lightning:formattedText aura:id="accField" label="Name" value="{!v.simpleRecord.Name}"/></p><br/>
+                            <p><b>BillingCity : </b><lightning:formattedText aura:id="accField" label="BillingCity" value="{!v.simpleRecord.BillingCity}"/></p><br/>
+                            <p><b>BillingState: </b><lightning:formattedText aura:id="accField" label="BillingState" value="{!v.simpleRecord.BillingState}"/></p><br/>
+                            <p><b>Industry: </b><lightning:formattedText aura:id="accField" label="Industry" value="{!v.simpleRecord.Industry}"/></p>
+                            <br/>
+                        </aura:renderIf>
+                        
+                        <aura:renderIf isTrue="{!v.option == 'create'}">
+                             <div class="slds-p-horizontal--small slds-align_absolute-center">
+                        		<lightning:button label="Save Account" variant="brand" onclick="{!c.handleSaveRecord}"/>
+                            </div>
+                        </aura:renderIf>
+                        <aura:renderIf isTrue="{!v.option == 'edit'}">
+                           <div class="slds-p-horizontal--small slds-align_absolute-center">
+                        		<lightning:button label="Update Account" variant="brand" onclick="{!c.handleSaveRecord}"/>
+                            </div>
+                        </aura:renderIf>
+                        <aura:renderIf isTrue="{!v.option == 'delete'}">
+                        	 <div class="slds-p-horizontal--small slds-align_absolute-center">
+                            	<lightning:button label="Delete Account" variant="destructive" onclick="{!c.handleDeleteRecord}"/>
+                        	</div>
+                        </aura:renderIf>
+                        </div>
+                </lightning:card>
+            </div>
+       </div>        
+       
+</div>
+</aura:component>
